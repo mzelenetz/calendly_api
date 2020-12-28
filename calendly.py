@@ -42,15 +42,20 @@ upcoming_events.to_csv(
 
 invitees = get_invitee_details(upcoming_events, access_token)
 invitees = invitees[['EmpNum', 'name', 'event',
-                     'email', 'unit', 'position', 'contact_number', 'uri', 'created_at', 'status']]
+                     'email', 'working_after_vaccine', 'contact_number', 'uri', 'created_at', 'status']]
 # active only
 invitees = invitees[invitees['status'] == 'active']
 invitees.columns = ['EmpNum', 'EmployeeName', 'event',
-                    'email', 'unit', 'position', 'working_after_vaccine', 'contact_number', 'invitee_event_uri', 'created_at', 'status']
+                    'email', 'working_after_vaccine', 'contact_number', 'invitee_event_uri', 'created_at', 'status']
 
 event_roster = upcoming_events[['name', 'start_time', 'uri']].merge(
     invitees, how='left', left_on='uri', right_on='event')
 
+check_in_view = event_roster[['name', 'start_time', 'end_time',
+                              'EmpNum', 'EmployeeName', 'email', 'contact_number', 'created_at']]
+# Create date and time columns
+check_in_view['start_date'] = check_in_view.start_time.dt.date
+check_in_view.start_time = check_in_view.start_time.dt.time
 
 print("Output roster to",
       'data/upcoming_events_with_invitees_{}.csv'.format(today_str(fmt="%Y-%m-%d_%H%M")))
@@ -63,5 +68,8 @@ print("Output invitees to",
 invitees.to_csv(
     'data/invitees_{}.csv'.format(today_str(fmt="%Y-%m-%d_%H%M")))
 
-if args.with_employee:
-    risk = pd.read_csv('risk.csv')
+
+print("Output check_in_view to",
+      'data/checkinview_{}.csv'.format(today_str(fmt="%Y-%m-%d_%H%M")))
+check_in_view.to_csv(
+    'data/checkinview_{}.csv'.format(today_str(fmt="%Y-%m-%d_%H%M")))

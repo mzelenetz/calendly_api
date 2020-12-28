@@ -76,7 +76,7 @@ def refresh_access_token():
 
     print(response.json())
 
-    if 'access_token' in response.json().keys() is True:
+    if response.json()['active'] is True:
         return access_token
     else:
         print(url_for_code())
