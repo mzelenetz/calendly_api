@@ -63,6 +63,11 @@ def restore_access_token_from_pickle():
 
 
 def refresh_access_token():
+    """Tries to use the old access token if available. If not calls retreive_access_token() to create a new token.
+
+    Returns:
+        access_token [str]: the access token for the rest of the API calls
+    """
     access_token = restore_access_token_from_pickle()
     url = "https://auth.calendly.com/oauth/introspect"
 

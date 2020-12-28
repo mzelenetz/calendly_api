@@ -48,7 +48,7 @@ invitees = invitees[invitees['status'] == 'active']
 invitees.columns = ['EmpNum', 'EmployeeName', 'event',
                     'email', 'working_after_vaccine', 'contact_number', 'invitee_event_uri', 'created_at', 'status']
 
-event_roster = upcoming_events[['name', 'start_time', 'uri']].merge(
+event_roster = upcoming_events[['name', 'start_time', 'end_time', 'uri']].merge(
     invitees, how='left', left_on='uri', right_on='event')
 
 check_in_view = event_roster[['name', 'start_time', 'end_time',
