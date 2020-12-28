@@ -74,7 +74,9 @@ def refresh_access_token():
     response = requests.request(
         "POST", url, data=json.dumps(payload), headers=headers)
 
-    if response.json()['active'] is True:
+    print(response.json())
+
+    if 'access_token' in response.json().keys() is True:
         return access_token
     else:
         print(url_for_code())
@@ -153,6 +155,8 @@ def parse_qna(qna, contact):
     for question in qna:
         if question['question'] == 'Employee ID#:':
             contact['EmpNum'] = question.get('answer', None)
+        elif question['question'] == 'When is the next day you are scheduled to work, after the selected date? (it is recommended that you are NOT scheduled to work the day following your POD appointment)':
+            contact['working_after_vaccine'] = question.get('answer', None)
         elif question['question'] == 'Unit/Dept:':
             contact['unit'] = question.get('answer', None)
         elif question['question'] == 'Title:':
@@ -170,6 +174,7 @@ def parse_contact(item):
     contact['uri'] = item['uri']
     contact['updated_at'] = item['updated_at']
     contact['contact_number'] = item['text_reminder_number']
+    contact['status'] = item['status']
 
     return contact
 

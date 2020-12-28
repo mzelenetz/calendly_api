@@ -21,8 +21,14 @@ access_token = refresh_access_token()
 
 #     access_token = retreive_access_token(code=code, ttl_hash=get_ttl_hash())
 
-print("Retreiving Scehduled Events")
+print("Retreiving Scheduled Events")
 scheduled_events = get_scheduled_events(access_token=access_token)
+scheduled_events['start_time'] = pd.to_datetime(
+    scheduled_events['start_time']).dt.tz_convert('US/Eastern')
+scheduled_events['end_time'] = pd.to_datetime(
+    scheduled_events['end_time']).dt.tz_convert('US/Eastern')
+scheduled_events['created_at'] = pd.to_datetime(
+    scheduled_events['created_at']).dt.tz_convert('US/Eastern')
 
 # upcoming_events = scheduled_events[(
 #     scheduled_events.status != 'canceled')].sort_values('start_time')
@@ -36,9 +42,11 @@ upcoming_events.to_csv(
 
 invitees = get_invitee_details(upcoming_events, access_token)
 invitees = invitees[['EmpNum', 'name', 'event',
-                     'email', 'unit', 'position', 'contact_number', 'uri']]
+                     'email', 'unit', 'position', 'contact_number', 'uri', 'created_at', 'status']]
+# active only
+invitees = invitees[invitees['status'] == 'active']
 invitees.columns = ['EmpNum', 'EmployeeName', 'event',
-                    'email', 'unit', 'position', 'contact_number', 'invitee_event_uri']
+                    'email', 'unit', 'position', 'working_after_vaccine', 'contact_number', 'invitee_event_uri', 'created_at', 'status']
 
 event_roster = upcoming_events[['name', 'start_time', 'uri']].merge(
     invitees, how='left', left_on='uri', right_on='event')
